@@ -1,0 +1,26 @@
+server:
+  port: 8761
+eureka:
+  server:
+    enable-self-preservation: true   # Ensure Eureka does not aggressively evict instances
+    eviction-interval-timer-in-ms: 6000000  # Increase eviction check interval (e.g., 100 minutes)
+    renewal-threshold-update-interval-ms: 99999999  # Prevent Eureka from recalculating renewal thresholds
+    renewal-percent-threshold: 0.1  # Allow renewals to drop to 10% before triggering eviction
+
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.netflix.eureka: DEBUG
+    com.netflix.discovery: DEBUG
+    com.netflix.eureka: DEBUG
+    feign.client: DEBUG
+  loggers:
+    org.springframework.cloud.netflix.eureka:
+      level: DEBUG
+    org.springframework.web:
+      level: DEBUG
+

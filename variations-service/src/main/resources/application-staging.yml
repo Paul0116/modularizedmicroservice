@@ -1,0 +1,22 @@
+
+server:
+  port: 8003
+
+spring:
+  application:
+    name: variation-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/
+      database: modularizeddb
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: false
+    lease-renewal-interval-in-seconds: 30 # Send heartbeats every 30 seconds
+    lease-expiration-duration-in-seconds: 999999  # Set expiration to an extremely high value
