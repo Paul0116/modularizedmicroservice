@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public class ProductResponseDtoConverter {
 
-    public ProductResponse convert(Products product, Mono<List<VariationResponse>> variation) {
+    public ProductResponse convert(Products product, List<VariationResponse> variation) {
         return new ProductResponse(
                 product.getId(),
                 product.getSku(),
@@ -23,7 +23,7 @@ public class ProductResponseDtoConverter {
                 product.getIs_delete(),
                 product.getCreated_date(),
                 product.getUpdated_date(),
-                variation.block()
+                variation
         );
     }
 }

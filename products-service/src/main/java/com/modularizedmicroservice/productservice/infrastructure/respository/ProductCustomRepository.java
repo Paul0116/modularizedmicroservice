@@ -2,10 +2,11 @@ package com.modularizedmicroservice.productservice.infrastructure.respository;
 
 import com.modularizedmicroservice.productservice.domain.model.Products;
 
-import java.util.Optional;
+
+
+import reactor.core.publisher.Mono;
 
 public interface ProductCustomRepository {
-    Optional<Products> findByCustomId(String id);
-    Optional<Products> findByCustomSku(String sku);
+    Mono<Products> findByCustomId(String id);
+    Mono<Products> findByCustomSku(String sku);
 }
-

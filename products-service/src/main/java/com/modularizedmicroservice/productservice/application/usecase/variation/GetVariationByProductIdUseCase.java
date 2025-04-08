@@ -1,4 +1,4 @@
-package com.modularizedmicroservice.productservice.application.usecase;
+package com.modularizedmicroservice.productservice.application.usecase.variation;
 
 import com.modularizedmicroservice.productservice.application.dto.response.ApiResponse;
 import com.modularizedmicroservice.productservice.application.dto.response.variation.VariationResponse;

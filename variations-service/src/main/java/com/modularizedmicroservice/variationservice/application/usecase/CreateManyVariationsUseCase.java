@@ -9,29 +9,30 @@ import com.modularizedmicroservice.variationservice.infrastructure.respository.V
 import com.modularizedmicroservice.variationservice.presentation.exception.ResourceAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class CreateSingleVariationUseCase {
+public class CreateManyVariationsUseCase {
 
     private final VariationsRepository variationsRepository;
     private final VariationResponseDtoConverter variationResponseDtoConverter;
 
-    public Mono<VariationResponse> execute(CreateVariationRequest request) {
-        return validateIfExists(request)
-                .hasElement()
-                .flatMap(exists -> {
-                    if (exists) {
-                        return Mono.error(new ResourceAlreadyExistsException("Variation with Barcode " + request.getBarcode() + " already exists."));
-                    } else {
-                        Variations variation = createVariationBuilder(request);
-                        return variationsRepository.save(variation).map(variationResponseDtoConverter::convert);
-                    }
-                });
+    public Flux<VariationResponse> execute(Flux<CreateVariationRequest> requests) {
+        return requests
+                .flatMap(request ->
+                        validateIfExists(request)
+                                .flatMap(existing -> Mono.<Variations>error(new ResourceAlreadyExistsException(
+                                        "Variation with Barcode " + request.getBarcode() + " already exists.")))
+                                .switchIfEmpty(Mono.defer(() -> Mono.just(createVariationBuilder(request))))
+                                .cast(Variations.class)
+                                .flatMap(variationsRepository::save)
+                                .map(variationResponseDtoConverter::convert));
     }
+
     private Mono<Variations> validateIfExists(CreateVariationRequest request) {
         return variationsRepository.findByCustomBarcode(request.getBarcode());
     }

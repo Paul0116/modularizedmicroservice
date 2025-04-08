@@ -1,35 +1,33 @@
 package com.modularizedmicroservice.productservice.infrastructure.respository;
 
 import com.modularizedmicroservice.productservice.domain.model.Products;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 @Component
 public class ProductCustomRepositoryImpl implements ProductCustomRepository {
-    private final MongoTemplate mongoTemplate;
+    private final ReactiveMongoTemplate reactiveMongoTemplate;
 
-    public ProductCustomRepositoryImpl(MongoTemplate mongoTemplate) {this.mongoTemplate = mongoTemplate;}
+    public ProductCustomRepositoryImpl(ReactiveMongoTemplate reactiveMongoTemplate) {
+        this.reactiveMongoTemplate = reactiveMongoTemplate;
+    }
 
     @Override
-    public Optional<Products> findByCustomId(String id) {
+    public Mono<Products> findByCustomId(String id) {
         Query query = new Query(Criteria.where("_id").is(id)
                 .and("is_delete").is(false)
                 .and("status").is(1));
-
-        return Optional.ofNullable(mongoTemplate.findOne(query, Products.class));
+        return reactiveMongoTemplate.findOne(query, Products.class);
     }
 
     @Override
-    public Optional<Products> findByCustomSku(String sku) {
+    public Mono<Products> findByCustomSku(String sku) {
         Query query = new Query(Criteria.where("sku").is(sku)
                 .and("is_delete").is(false)
                 .and("status").is(1));
-        return Optional.ofNullable(mongoTemplate.findOne(query, Products.class));
+        return reactiveMongoTemplate.findOne(query, Products.class);
     }
-
-
 }

@@ -2,14 +2,12 @@ package com.modularizedmicroservice.productservice.application.service;
 
 import com.modularizedmicroservice.productservice.application.dto.request.CreateProductRequest;
 import com.modularizedmicroservice.productservice.application.dto.response.ProductResponse;
-import com.modularizedmicroservice.productservice.application.dto.response.variation.VariationResponse;
 import com.modularizedmicroservice.productservice.application.usecase.CreateSingleProductUseCase;
 import com.modularizedmicroservice.productservice.application.usecase.GetProductByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,23 +16,17 @@ public class ProductService {
     private final GetProductByIdUseCase getProductByIdUseCase;
     private final CreateSingleProductUseCase createSingleProductUseCase;
 
-
-
-    public ProductResponse getProductById(String id) {
+    public Mono<ProductResponse> getProductById(String id) {
         return getProductByIdUseCase.execute(id);
     }
 
-
-
-    public ProductResponse createProduct(CreateProductRequest createProductRequest) {
-
-        validateProduct(createProductRequest);
-
-        return createSingleProductUseCase.execute(createProductRequest);
-
+    public Mono<ProductResponse> createProduct(CreateProductRequest createProductRequest) {
+        return Mono.fromRunnable(() -> validateProduct(createProductRequest)) // Ensure validation runs first
+                .then(Mono.defer(() -> createSingleProductUseCase.execute(createProductRequest))); // Execute reactively
     }
 
-    public void validateProduct(CreateProductRequest request) {
+
+    private void validateProduct(CreateProductRequest request) {
         validateNotEmpty(request.getName(), "Product name cannot be empty");
         validateNotNull(request.getCategory_id(), "Category id is required");
         validateNotEmpty(request.getTags(), "Tags are required");
@@ -48,17 +40,10 @@ public class ProductService {
         }
     }
 
-    private void validateNotEmpty(List<?> value, String message) {
-        if (value == null || value.isEmpty()) {
-            throw new IllegalArgumentException(message);
-        }
-    }
 
     private void validateNotNull(Object value, String message) {
         if (value == null) {
             throw new IllegalArgumentException(message);
         }
     }
-
-
-}
+    }
