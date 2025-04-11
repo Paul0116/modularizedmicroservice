@@ -33,4 +33,4 @@ public class CreateVariationsByProductIdUseCase {
                 .map(ApiResponse::getData)
                 .onErrorResume(e -> Mono.error(new RuntimeException("Error creating variations: " +e.getMessage(), e)));
     }
-}
+}r
